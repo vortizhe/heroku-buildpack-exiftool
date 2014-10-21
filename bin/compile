@@ -7,15 +7,18 @@ echo "-----> Installing ExifTool"
 RSSFEED_URL="http://owl.phy.queensu.ca/~phil/exiftool/rss.xml"
 TARBALL_URL="$(curl -s -o - "$RSSFEED_URL" | perl -ne 'if ((/\<title\>.+production release.+\<\/title\>/i .. /\<\/item\>/) && /enclosure.+(http.+\.tar\.gz)/) {print $1}')"
 RENAME_DIR="$(echo "$TARBALL_URL" | perl -ne '/.+\/(.+)\.tar\.gz/ && print $1')"
+VERSION_NO="$(echo "$RENAME_DIR"  | perl -ne '/ExifTool-(.+)$/i   && print $1')"
 TARGET_DIR="$1/vendor"
 
 # download and unpack
 mkdir -p "$TARGET_DIR"
 cd       "$TARGET_DIR"
 curl --fail --retry 3 --retry-delay 1 --connect-timeout 3 "$TARBALL_URL" -s -o - | tar zxf -
-mv "$RENAME_DIR" exiftool
 
-cd ./bin
+# show installed version
+mv "$RENAME_DIR" exiftool
+cd             ./exiftool
+echo '       Version: '"$VERSION_NO"
 echo '       Installed: '`ls exif*`
 echo '       PATH: '"$PATH"
 echo
