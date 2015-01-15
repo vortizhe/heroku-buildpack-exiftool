@@ -22,6 +22,7 @@ echo "Installing exiftool" | arrow
 # download and unpack
 mkdir -p "$TARGET_PATH"
 cd       "$TARGET_PATH"
+echo "Fetching   $TARBALL_URL" | indent
 curl --fail --retry 3 --retry-delay 1 --connect-timeout 3 "$TARBALL_URL" -s -o - | tar zxf -
 
 # configure path
@@ -32,6 +33,6 @@ EOF
 # show installed version
 mv "$RENAME_DIR" exiftool
 cd             ./exiftool
-echo "Installed: "`ls exif*` | indent
-echo "Version: $VERSION_NO"  | indent
+echo "Installed: "`ls exif*`  | indent
+echo "Version:   $VERSION_NO" | indent
 echo
