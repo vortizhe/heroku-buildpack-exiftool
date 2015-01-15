@@ -32,6 +32,6 @@ EOF
 # show installed version
 mv "$RENAME_DIR" exiftool
 cd             ./exiftool
-echo "Version: $VERSION_NO"  | indent
 echo "Installed: "`ls exif*` | indent
+echo "Version: $VERSION_NO"  | indent
 echo
