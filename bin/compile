@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bin/compile <build-dir> <cache-dir>
+# bin/compile BUILD_DIR CACHE_DIR ENV_DIR
 
 arrow() {
   sed -u 's/^/-----> /'
@@ -9,15 +9,20 @@ indent() {
   sed -u 's/^/       /'
 }
 
+BUILD_DIR=$1
+CACHE_DIR=$2
+BUILDPACK_DIR=`cd $(dirname $0)/..; pwd`
+
 # extract url of latest production version from the rss feed
 RSSFEED_URL="http://owl.phy.queensu.ca/~phil/exiftool/rss.xml"
 TARBALL_URL="$(curl -s -o - "$RSSFEED_URL" | perl -ne 'if (!$got && (/\<title\>.+production release.+\<\/title\>/i .. /\<\/item\>/) && /enclosure.+(http.+\.tar\.gz)/) {print $1; $got = 1}')"
 RENAME_DIR="$(echo "$TARBALL_URL" | perl -ne '/.+\/(.+)\.tar\.gz/ && print $1')"
 VERSION_NO="$(echo "$RENAME_DIR"  | perl -ne '/ExifTool-(.+)$/i   && print $1')"
-TARGET_PATH="$1/vendor"
+
+TARGET_PATH="$BUILD_DIR/vendor"
 VENDOR_PATH="/app/vendor"
 
-echo "Installing exiftool" | arrow
+echo "Installing exiftool $VERSION_NO" | arrow
 
 # download and unpack
 mkdir -p "$TARGET_PATH"
@@ -26,13 +31,12 @@ echo "Fetching   $TARBALL_URL" | indent
 curl --fail --retry 3 --retry-delay 1 --connect-timeout 3 "$TARBALL_URL" -s -o - | tar zxf -
 
 # configure path
-cat <<EOF > "$1/.profile.d/exiftool.sh"
+cat <<EOF > "$BUILD_DIR/.profile.d/exiftool.sh"
 export PATH="$VENDOR_PATH/exiftool:\$PATH"
 EOF
 
 # show installed version
 mv "$RENAME_DIR" exiftool
 cd             ./exiftool
-echo "Installed: "`ls exif*`  | indent
-echo "Version:   $VERSION_NO" | indent
+echo "Installed: "`ls exif*` | indent
 echo
