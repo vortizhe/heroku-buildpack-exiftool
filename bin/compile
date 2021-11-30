@@ -27,7 +27,7 @@ cd       "$TARGET_PATH"
 
 # download and unpack
 echo "Fetching   $TARBALL_URL" | indent
-curl --fail --retry 3 --retry-delay 1 --connect-timeout 3 "$TARBALL_URL" -s -o - | tar xzf -
+curl --fail -L --retry 3 --retry-delay 1 --connect-timeout 3 "$TARBALL_URL" -s -o - | tar xzf -
 
 # configure path
 mkdir -p    "$PROFILE_PATH"
